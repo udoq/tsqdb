@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Customer {
+  id String @id @default(cuid())
+  firstname String
+  lastname String
+  street String?
+  plz String?
+  city String?
+  email String?
+  phone String?
+  courses Course[]
+  attendances Attendance[]
+}
+
+model Course {
+  id String @id @default(cuid())
+  title String
+  description String?
+  customers Customer[]
+  category Category[]
+  attendances Attendance[]
+  timetable Timetable[]
+}
+
+model Category {
+  id String @id @default(cuid())
+  title String
+  description String?
+  imageUrl String?
+  course Course? @relation(fields: [courseId], references: [id])
+  courseId String?
+}
+
+model Attendance {
+  customer Customer @relation(fields: [customerId], references: [id])
+  customerId String
+  course Course @relation(fields: [courseId], references: [id])
+  courseId String
+  date DateTime @default(now())
+  @@unique([customerId, courseId, date])
+}
+
+model Timetable {
+  id String @id @default(cuid())
+  course Course @relation(fields: [courseId], references: [id])
+  courseId String
+  weekDay String
+  timeStart String // 16:00
+  duration_min Int // 75
+}
