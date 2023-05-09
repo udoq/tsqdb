@@ -5,6 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -29,9 +33,10 @@ model Course {
   title String
   description String?
   customers Customer[]
-  category Category[]
   attendances Attendance[]
   timetable Timetable[]
+  category Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
 }
 
 model Category {
@@ -39,8 +44,7 @@ model Category {
   title String
   description String?
   imageUrl String?
-  course Course? @relation(fields: [courseId], references: [id])
-  courseId String?
+  courses Course[]
 }
 
 model Attendance {
